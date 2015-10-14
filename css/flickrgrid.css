@@ -1,0 +1,79 @@
+ul.flickrGrid {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	background: yellow;
+}
+
+ul.flickrGrid li {
+	float: left;
+	display: inline;
+	height: 250px;
+	width: 250px;
+	vertical-align: middle;
+	text-align: center;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	background: #F7F7F7;
+
+	border: 5px solid #fff;
+    cursor: pointer;
+    float: left;
+    margin: 0px;
+    position: relative;
+    overflow: hidden;
+    -webkit-box-shadow: 1px 1px 1px 1px #ccc;
+    -moz-box-shadow: 1px 1px 1px 1px #ccc;
+    box-shadow: 1px 1px 1px 1px #ccc;
+
+}
+
+
+ul.flickrGrid li h6 a {
+	color: #D7D7D7;
+}
+
+/* Vertical align from http://zerosixthree.se/vertical-align-anything-with-just-3-lines-of-css/ */
+ul.flickrGrid li img {
+	position: relative;
+	  top: 50%;
+	  -webkit-transform: translateY(-50%);
+	  -ms-transform: translateY(-50%);
+	  transform: translateY(-50%);
+}
+
+
+
+
+
+/* -- box overlays --*/
+ul.flickrGrid li .caption {
+    background-color: rgba(0,0,0,0.8);
+    position: absolute;
+    color: #fff;
+    z-index: 100;
+    -webkit-transition: all 300ms ease-out;
+    -moz-transition: all 300ms ease-out;
+    -o-transition: all 300ms ease-out;
+    -ms-transition: all 300ms ease-out;
+    transition: all 300ms ease-out;
+    left: 0;
+}
+
+
+ul.flickrGrid li .full-caption {
+    width: 230px;
+    height: 250px;
+    top: -270px;
+    text-align: left;
+    padding: 10px;
+}
+
+
+ul.flickrGrid li:hover .full-caption {
+    -moz-transform: translateY(100%);
+    -o-transform: translateY(100%);
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+}
