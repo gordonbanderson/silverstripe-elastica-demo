@@ -1,0 +1,7 @@
+---
+Name: flickr-extensions
+After: 'framework/*','cms/*'
+---
+FlickrPhoto:
+  extensions:
+    ['MapExtension']

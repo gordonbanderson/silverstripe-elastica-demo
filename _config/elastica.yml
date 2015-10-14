@@ -1,0 +1,56 @@
+---
+Name: elasticaflickr
+After: 'framework/*','cms/*'
+---
+
+FlickrSetPage:
+  searchable_fields:
+    - Description
+
+FlickrSet:
+  searchable_fields:
+    - Title
+    - Description
+    - FlickrID
+  extensions:
+    - 'SilverStripe\Elastica\Searchable'
+
+#Data Objects that require to be searched
+FlickrPhoto:
+  extensions:
+    - FlickrPhotoElasticaIndexingExtension
+    - 'SilverStripe\Elastica\Searchable'
+  searchable_fields:
+    - TakenAt
+    - Title
+    - Description
+    - FlickrID
+    - ShutterSpeed
+    - FocalLength35mm
+    - OriginalHeight
+    - OriginalWidth
+    - Aperture
+    - GeoIsPublic
+    - SmallURL
+    - SmallWidth
+    - SmallHeight
+    - SquareURL
+    - SquareWidth
+    - SquareHeight
+    - ISO
+    - AspectRatio
+  searchable_relationships:
+    - FlickrSets
+    - FlickrTags
+    - Photographer #has_one
+
+FlickrTag:
+  extensions:
+    - FlickrTagElasticaIndexingExtension
+    - 'SilverStripe\Elastica\Searchable'
+
+FlickrAuthor:
+  extensions:
+    - 'SilverStripe\Elastica\Searchable'
+  searchable_fields:
+    - DisplayName

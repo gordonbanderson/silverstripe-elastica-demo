@@ -1,0 +1,4 @@
+FlickrController:
+  #Set this to true if you wish to download the flickr images to your assets directory.
+  #Alternatively set this to false if you are using the Flickr URLs (in which case a local copy is not necessary)
+  download_images: false

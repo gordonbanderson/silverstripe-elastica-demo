@@ -1,0 +1,7 @@
+---
+Name: flickrtestroutes
+---
+Director:
+  rules:
+    'flickrexport': 'FlickrExportController'
+    'flickr': 'FlickrController'
