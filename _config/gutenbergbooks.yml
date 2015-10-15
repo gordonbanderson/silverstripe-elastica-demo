@@ -1,6 +1,39 @@
 GutenbergBlogPostsTask:
   Books:
     - Book:
+        Title: History of Australia and New Zealand
+        URL: http://www.gutenberg.org/cache/epub/25828/pg25828.txt
+    - Book:
+        Title: New Zealanders at Gallipoli
+        URL: http://www.gutenberg.org/cache/epub/45354/pg45354.txt
+    - Book:
+        Title: Station Life in New Zealand
+        URL: http://www.gutenberg.org/cache/epub/6104/pg6104.txt
+    - Book:
+        Title: A Narrative of a Nine Months' Residence in New Zealand
+        URL: http://www.gutenberg.org/cache/epub/11933/pg11933.txt
+    - Book:
+        Title: Maori and Settler: A Story of The New Zealand War
+        URL: http://www.gutenberg.org/cache/epub/33619/pg33619.txt
+    - Book:
+        Title: The City of Auckland
+        URL: http://www.gutenberg.org/cache/epub/46925/pg46925.txt
+    - Book:
+        Title: Beautiful Shells of New Zealand
+        URL: http://www.gutenberg.org/cache/epub/33987/pg33987.txt
+    - Book:
+        Title: An Account of the Insects Noxious to Agriculture and Plants in New Zealand
+        URL: http://www.gutenberg.org/files/48394/48394-0.txt
+    - Book:
+        Title: An Elementary Manual of New Zealand Entomology
+        URL: http://www.gutenberg.org/cache/epub/44096/pg44096.txt
+    - Book:
+        Title: Five Years in New Zealand
+        URL: http://www.gutenberg.org/cache/epub/18068/pg18068.txt
+    - Book:
+        Title: Old New Zealand: A Tale of the Good Old Times
+        URL: http://www.gutenberg.org/cache/epub/39361/pg39361.txt
+    - Book:
         Title: Across Asia on a Bicycle
         URL: https://www.gutenberg.org/files/31111/31111-0.txt
     - Book:
