@@ -1,0 +1,46 @@
+GutenbergBlogPostsTask:
+  Books:
+    - Book:
+        Title: Across Asia on a Bicycle
+        URL: https://www.gutenberg.org/files/31111/31111-0.txt
+    - Book:
+        Title: From Edinburgh to India & Burmah
+        URL: https://www.gutenberg.org/cache/epub/22749/pg22749.txt
+
+    - Book:
+        Title: Mount Everest the Reconnaissance, 1921
+        URL: https://www.gutenberg.org/cache/epub/39421/pg39421.txt
+    - Book:
+        Title: Travel Tales in the Promised Land (Palestine)
+        URL: https://www.gutenberg.org/cache/epub/25729/pg25729.txt
+    - Book:
+        Title: Alice In Wonderland
+        URL: https://www.gutenberg.org/cache/epub/19033/pg19033.txt
+    - Book:
+        Title: Around the World in Eighty Days
+        URL: http://www.gutenberg.org/cache/epub/103/pg103.txt
+    - Book:
+        Title: Adventures of Huckleberry Finn
+        URL: https://www.gutenberg.org/cache/epub/76/pg76.txt
+    - Book:
+        Title: Uber die Dichtkunst
+        URL: https://www.gutenberg.org/files/16880/16880-0.txt
+        Locale: de_DE
+    - Book:
+        Title: Parasiten der Honigbiene
+        URL: https://www.gutenberg.org/cache/epub/19673/pg19673.txt
+        Locale: de_DE
+    - Book:
+        Title: Peking-Paris im Automobil
+        URL: https://www.gutenberg.org/files/47798/47798-0.txt
+        Locale: de_DE
+    - Book:
+        Title: Gedenkrede auf Wolfgang Amade Mozart
+        URL: https://www.gutenberg.org/files/18232/18232-0.txt
+        Locale: de_DE
+
+
+
+
+
+
