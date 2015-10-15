@@ -11,13 +11,17 @@ class FlickrController extends Page_Controller implements PermissionProvider {
 	);
 
 
+	/*
+	Cache the tags in memory to try and avoid DB calls
+	 */
+	private static $tagCache = array();
+
+
 	public function providePermissions() {
 		return array(
 			"FLICKR_EDIT" => "Able to import and edit flickr data"
 		);
 	}
-
-
 
 
 	public function init() {
@@ -59,9 +63,19 @@ class FlickrController extends Page_Controller implements PermissionProvider {
 		$page = 1;
 		$ctr = 1;
 
+		$start=time();
+
+
 		while ($page <= $nPages) {
-			echo "\n\nLoading $page / $nPages\n";
+			echo "\n\n\n\n----------- LOADING PICS -----------\n";
 			$query = $_GET['q'];
+
+			if ($nPages == 1e7) {
+				echo "Starting search for $query\n";
+			} else {
+				echo "\n\nLoading $page / $nPages\n";
+			}
+
 			$searchParams['text'] = $query;
 			$searchParams['license'] = 7;
 			$searchParams['per_page'] = 500;
@@ -76,14 +90,27 @@ class FlickrController extends Page_Controller implements PermissionProvider {
 			echo "Found $nPages pages\n";
 			echo "n photos returned ".sizeof($data['photo']);
 
-
 			foreach($data['photo'] as $photo) {
-				print_r($photo);
+				echo "[Import photo $ctr / $totalImages, page $page / $nPages]\n";
+				echo "Loading photo:".$photo['title']."\n";
 
-				echo "Import photo $ctr / $totalImages, page $page / $nPages\n";
-				$flickrPhoto = $this->createFromFlickrArray($photo);
+				$elapsed = time()-$start;
+				$perPhoto = $elapsed/$ctr;
+				$remaining = ($totalImages-$ctr)*$perPhoto;
+				$hours = floor($remaining / 3600);
+				$minutes = floor(($remaining / 60) % 60);
+				$seconds = $remaining % 60;
+				echo "Estimated time remaning - $hours:$minutes:$seconds\n";
+
+				$flickrPhoto = $this->createOrUpdateFromFlickrArray($photo);
 				echo "\tLoading exif data\n";
-				$flickrPhoto->loadExif();
+				if (!$flickrPhoto->Processed) {
+					if ($flickrPhoto->checkExifRequired()) {
+						$flickrPhoto->loadExif();
+					}
+					$flickrPhoto->Processed = true;
+					$flickrPhoto->write();
+				}
 				$ctr++;
 			}
 			$page++;
@@ -215,7 +242,7 @@ class FlickrController extends Page_Controller implements PermissionProvider {
 		foreach ( $photoset['photo'] as $key => $value ) {
 			echo "Importing photo {$ctr}/${numberOfPics}\n";
 
-			$flickrPhoto = $this->createFromFlickrArray($value);
+			$flickrPhoto = $this->createOrUpdateFromFlickrArray($value);
 
 			if ($value['isprimary'] == 1) {
 				$flickrSet->MainImage = $flickrPhoto;
@@ -255,132 +282,172 @@ class FlickrController extends Page_Controller implements PermissionProvider {
 	}
 
 
-	private function createFromFlickrArray($value, $only_new_photos = false) {
+	private function createOrUpdateFromFlickrArray($value, $only_new_photos = false) {
 		gc_collect_cycles();
 
-			$flickrPhotoID = $value['id'];
+		$flickrPhotoID = $value['id'];
 
-			// the author, e.g. gordonbanderson
-			$pathalias = $value['pathalias'];
+		// the author, e.g. gordonbanderson
+		$pathalias = $value['pathalias'];
 
-			// do we have a set object or not
-			$flickrPhoto = DataObject::get_one( 'FlickrPhoto', 'FlickrID='.$flickrPhotoID );
+		// do we have a set object or not
+		$flickrPhoto = DataObject::get_one( 'FlickrPhoto', 'FlickrID='.$flickrPhotoID );
 
-			// if a set exists update data, otherwise create
-			if ( !$flickrPhoto ) {
-				$flickrPhoto = new FlickrPhoto();
+		// if a set exists update data, otherwise create
+		if ( !$flickrPhoto ) {
+			$flickrPhoto = new FlickrPhoto();
+		}
+
+		// if we are in the mode of only importing new then skip to the next iteration if this pic already exists
+		else if ( $only_new_photos ) {
+			continue;
+		}
+
+		$flickrPhoto->Title = $value['title'];
+
+		$flickrPhoto->FlickrID = $flickrPhotoID;
+		$flickrPhoto->KeepClean = true;
+
+		$flickrPhoto->TakenAt = $value['datetaken'];
+		$flickrPhoto->DateGranularity = $value['datetakengranularity'];
+
+
+		$flickrPhoto->MediumURL = $value['url_m'];
+		$flickrPhoto->MediumHeight = $value['height_m'];
+		$flickrPhoto->MediumWidth = $value['width_m'];
+
+		$flickrPhoto->SquareURL = $value['url_s'];
+		$flickrPhoto->SquareHeight = $value['height_s'];
+		$flickrPhoto->SquareWidth = $value['width_s'];
+
+
+		$flickrPhoto->ThumbnailURL = $value['url_t'];
+		$flickrPhoto->ThumbnailHeight = $value['height_t'];
+		$flickrPhoto->ThumbnailWidth = $value['width_t'];
+
+		$flickrPhoto->SmallURL = $value['url_s'];
+		$flickrPhoto->SmallHeight = $value['height_s'];
+		$flickrPhoto->SmallWidth = $value['width_s'];
+
+		// If the image is too small, large size will not be set
+		if (isset($value['url_l'])) {
+			$flickrPhoto->LargeURL = $value['url_l'];
+			$flickrPhoto->LargeHeight = $value['height_l'];
+			$flickrPhoto->LargeWidth = $value['width_l'];
+		}
+
+
+		$flickrPhoto->OriginalURL = $value['url_o'];
+		$flickrPhoto->OriginalHeight = $value['height_o'];
+		$flickrPhoto->OriginalWidth = $value['width_o'];
+
+		$flickrPhoto->Description = 'test';// $value['description']['_content'];
+
+
+
+
+		$lat = number_format( $value['latitude'], 15 );
+		$lon = number_format( $value['longitude'], 15 );
+
+		if (isset($value['place_id'])) {
+			$flickrPhoto->FlickrPlaceID = $value['place_id'];
+		}
+
+		if (isset($value['woeid'])) {
+			$flickrPhoto->WoeID = $value['woeid'];
+		}
+
+		$flickrPhoto->Media = $value['media'];
+
+
+		if ( $value['latitude'] ) {
+			$flickrPhoto->Lat = $lat;
+			$flickrPhoto->ZoomLevel = 15;
+		}
+		if ( $value['longitude'] ) {
+			$flickrPhoto->Lon = $lon;
+		}
+
+		if ( $value['accuracy'] ) {
+			$flickrPhoto->Accuracy = $value['accuracy'];
+		}
+
+		if ( isset( $value['geo_is_public'] ) ) {
+			$flickrPhoto->GeoIsPublic = $value['geo_is_public'];
+		}
+
+		if ( isset( $value['woeid'] ) ) {
+			$flickrPhoto->WoeID = $value['woeid'];
+		}
+
+
+
+		$singlePhotoInfo = $this->f->photos_getInfo( $flickrPhotoID );
+
+		if (isset($singlePhotoInfo['photo']['license'])) {
+			$flickrPhoto->FlickrLicenseID = $singlePhotoInfo['photo']['license'];
+		}
+
+		$owner = $singlePhotoInfo['photo']['owner'];
+		$pathalias = $owner['path_alias'];
+
+		$author = FlickrAuthor::get()->filter('PathAlias', $pathalias)->first();
+		if (!$author) {
+			$author = new FlickrAuthor();
+			$author->PathAlias = $pathalias;
+			$author->RealName = $owner['realname'];
+			$author->Username = $owner['username'];
+			$author->NSID = $owner['nsid'];
+			$author->write();
+		} elseif (!$author->RealName) {
+			// Fix missing values
+			$author->PathAlias = $pathalias;
+			$author->RealName = $owner['realname'];
+			$author->Username = $owner['username'];
+			$author->NSID = $owner['nsid'];
+			$author->write();
+		}
+
+		$flickrPhoto->PhotographerID = $author->ID;
+
+
+		$flickrPhoto->Description = $singlePhotoInfo['photo']['description']['_content'];
+		$flickrPhoto->Rotation = $singlePhotoInfo['photo']['rotation'];
+
+		if ( isset( $singlePhotoInfo['photo']['visibility'] ) ) {
+			$flickrPhoto->IsPublic = $singlePhotoInfo['photo']['visibility']['ispublic'];
+		}
+
+		$flickrPhoto->write();
+
+		foreach ( $singlePhotoInfo['photo']['tags']['tag'] as $key => $taginfo ) {
+			$content = $taginfo['_content'];
+
+			$tags = FlickrTag::get()->filter('Value', $content);
+			if ($tags->count() > 1) {
+				throw new Exception("The tag $content has multiple instances");
 			}
-
-			// if we are in the mode of only importing new then skip to the next iteration if this pic already exists
-			else if ( $only_new_photos ) {
-					continue;
-			}
-
-			$flickrPhoto->Title = $value['title'];
-
-			$flickrPhoto->FlickrID = $flickrPhotoID;
-			$flickrPhoto->KeepClean = true;
-
-
-			$flickrPhoto->MediumURL = $value['url_m'];
-			$flickrPhoto->MediumHeight = $value['height_m'];
-			$flickrPhoto->MediumWidth = $value['width_m'];
-
-			$flickrPhoto->SquareURL = $value['url_s'];
-			$flickrPhoto->SquareHeight = $value['height_s'];
-			$flickrPhoto->SquareWidth = $value['width_s'];
-
-
-			$flickrPhoto->ThumbnailURL = $value['url_t'];
-			$flickrPhoto->ThumbnailHeight = $value['height_t'];
-			$flickrPhoto->ThumbnailWidth = $value['width_t'];
-
-			$flickrPhoto->SmallURL = $value['url_s'];
-			$flickrPhoto->SmallHeight = $value['height_s'];
-			$flickrPhoto->SmallWidth = $value['width_s'];
-
-			// If the image is too small, large size will not be set
-			if (isset($value['url_l'])) {
-				$flickrPhoto->LargeURL = $value['url_l'];
-				$flickrPhoto->LargeHeight = $value['height_l'];
-				$flickrPhoto->LargeWidth = $value['width_l'];
-			}
-
-
-			$flickrPhoto->OriginalURL = $value['url_o'];
-			$flickrPhoto->OriginalHeight = $value['height_o'];
-			$flickrPhoto->OriginalWidth = $value['width_o'];
-
-			$flickrPhoto->Description = 'test';// $value['description']['_content'];
-
-			$author = FlickrAuthor::get()->filter('PathAlias', $pathalias)->first();
-			if (!$author) {
-				$author = new FlickrAuthor();
-				$author->PathAlias = $pathalias;
-				$author->write();
-			}
-
-			$flickrPhoto->PhotographerID = $author->ID;
-
-			$lat = number_format( $value['latitude'], 15 );
-			$lon = number_format( $value['longitude'], 15 );
-
-
-			if ( $value['latitude'] ) {
-				$flickrPhoto->Lat = $lat;
-				$flickrPhoto->ZoomLevel = 15;
-			}
-			if ( $value['longitude'] ) {
-				$flickrPhoto->Lon = $lon;
-			}
-
-			if ( $value['accuracy'] ) {
-				$flickrPhoto->Accuracy = $value['accuracy'];
-			}
-
-			if ( isset( $value['geo_is_public'] ) ) {
-				$flickrPhoto->GeoIsPublic = $value['geo_is_public'];
-			}
-
-			if ( isset( $value['woeid'] ) ) {
-				$flickrPhoto->WoeID = $value['woeid'];
-			}
-
-			$singlePhotoInfo = $this->f->photos_getInfo( $flickrPhotoID );
-
-			$flickrPhoto->Description = $singlePhotoInfo['photo']['description']['_content'];
-			$flickrPhoto->TakenAt = $singlePhotoInfo['photo']['dates']['taken'];
-			$flickrPhoto->Rotation = $singlePhotoInfo['photo']['rotation'];
-
-			if ( isset( $singlePhotoInfo['photo']['visibility'] ) ) {
-				$flickrPhoto->IsPublic = $singlePhotoInfo['photo']['visibility']['ispublic'];
-			}
-
-			$flickrPhoto->write();
-
-			foreach ( $singlePhotoInfo['photo']['tags']['tag'] as $key => $taginfo ) {
-				$tag = DataObject::get_one( 'FlickrTag', "\"Value\"='".$taginfo['_content']."'" );
-				if ( !$tag ) {
-					$tag = new FlickrTag();
-				}
-
+			$tag = $tags->first();
+			if ( !$tag ) {
+				$tag = new FlickrTag();
 				$tag->FlickrID = $taginfo['id'];
 				$tag->Value = $taginfo['_content'];
 				$tag->RawValue = $taginfo['raw'];
 				$tag->write();
-
-				$ftags= $flickrPhoto->FlickrTags();
-				$ftags->add( $tag );
-
-				$flickrPhoto->write();
-
-				$tag = NULL;
-				$ftags = NULL;
-
-				gc_collect_cycles();
 			}
 
-			return $flickrPhoto;
+
+
+			$ftags= $flickrPhoto->FlickrTags();
+			$ftags->add( $tag );
+
+			$flickrPhoto->write();
+
+			$tag = NULL;
+			$ftags = NULL;
+		}
+
+		return $flickrPhoto;
 	}
 
 
