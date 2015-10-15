@@ -10,14 +10,25 @@ class FlickrPhoto extends DataObject {
 		'FlickrID' => 'Varchar',
 		'Description' => 'HTMLText',
 		'TakenAt' => 'Datetime',
+		'DateGranularity' => 'Int',
+		'FlickrLicenseID' => 'Int',
+		/*
+		0	Y-m-d H:i:s
+		4	Y-m
+		6	Y
+		8	Circa...
+		 */
 		'FlickrLastUpdated' => 'Date',
+		'GeoIsPublic' => 'Boolean',
+		'FlickrWoeID' => 'Int',
+		'FlickrPlaceID' => 'Varchar(255)',
 		'GeoIsPublic' => 'Boolean',
 
 		// flag to indicate requiring a flickr API update
 		'IsDirty' => 'Boolean',
 
 		'Orientation' => 'Int',
-		'WoeID' => 'Int',
+		'FlickrWoeID' => 'Int',
 		'Accuracy' => 'Int',
 		'FlickrPlaceID' => 'Varchar(255)',
 		'Rotation' => 'Int',
@@ -29,6 +40,7 @@ class FlickrPhoto extends DataObject {
 		'ISO' => 'Int',
 
 		'AspectRatio' => 'Float',
+		'Media' => 'Varchar',
 
 		'SmallURL' => 'Varchar(255)',
 		'SmallHeight' => 'Int',
@@ -54,7 +66,10 @@ class FlickrPhoto extends DataObject {
 		'OriginalHeight' => 'Int',
 		'OriginalWidth' => 'Int',
 		'TimeShiftHours' => 'Int',
-		'PromoteToHomePage' => 'Boolean'
+		'PromoteToHomePage' => 'Boolean',
+
+		'IgnoreExif' => 'Boolean',
+		'Processed' => 'Boolean'
 		//TODO - place id
 	);
 
@@ -292,7 +307,32 @@ class FlickrPhoto extends DataObject {
 	}
 
 
+	private function endsWith($haystack,$needle) {
+	    return (strcmp(substr($haystack, strlen($haystack) - strlen($needle)),$needle)===0);
+	}
+
+
+	public function checkExifRequired() {
+		$exifRequired = true;
+
+		// If no accurate time assume no EXIF data of uses
+		if ($this->DateGranularity > 0) {
+			$exifRequired = false;
+		}
+
+		//01-01 00:00:00
+		if ($this->endsWith("{$this->TakenAt}", "01-01 00:00:00")) {
+			$exifRequired = false;
+		};
+
+		$this->IgnoreExif = !$exifRequired;
+
+		return $exifRequired;
+	}
+
+
 	public function loadExif() {
+		echo "Loading exif\n";
 		$this->initialiseFlickr();
 		$exifData = $this->f->photos_getExif( $this->FlickrID );
 
@@ -315,7 +355,8 @@ class FlickrPhoto extends DataObject {
 			$exif->Label = $exifInfo['label'];
 			$exif->Raw = $exifInfo['raw']['_content'];
 			$exif->FlickrPhotoID = $this->ID;
-			$exif->write();
+			//NO NEED TO SAVE HERE
+			//$exif->write();
 
 			echo "- {$exif->Tag} = {$exif->Raw}\n";
 
