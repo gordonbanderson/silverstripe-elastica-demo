@@ -2,8 +2,8 @@
 class FlickrTag extends DataObject {
 
 	static $db = array(
-		'Value' => 'Varchar',
-		'FlickrID' => 'Varchar',
+		'Value' => 'Varchar(255)',
+		'FlickrID' => 'Varchar(255)',
 		'RawValue' => 'HTMLText'
 	);
 
