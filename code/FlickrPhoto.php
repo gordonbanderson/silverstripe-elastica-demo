@@ -9,6 +9,7 @@ class FlickrPhoto extends DataObject {
 		'Title' => 'Varchar(255)',
 		'FlickrID' => 'Varchar',
 		'Description' => 'HTMLText',
+		'OriginalDescription' => 'HTMLText',
 		'TakenAt' => 'Datetime',
 		'DateGranularity' => 'Int',
 		'FlickrLicenseID' => 'Int',
