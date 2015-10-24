@@ -30,9 +30,19 @@ ul.flickrGrid li {
 }
 
 
+
+
 ul.flickrGrid li h6 a {
 	color: #D7D7D7;
 }
+
+
+ul.flickrGrid li  a.similarLink {
+	float: right;
+	color: #D7D7D7;
+}
+
+
 
 ul.flickrGrid li h6 a strong {
 	color: #AAA;
