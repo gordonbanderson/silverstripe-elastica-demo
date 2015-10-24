@@ -9,7 +9,7 @@
 <% else %>
   $AbsoluteLink
 <% end_if %>
-- <a href="$SimilarSearchLink">Similar</a>
+- <a href="$ContainerLink/similar/$ClassName/$ID">Similar</a>
 - $PublishDate.Format(d/m/Y)
 &nbsp; <span class="source">(Source: $Source)</span>
 </div>
