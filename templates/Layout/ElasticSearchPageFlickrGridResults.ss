@@ -20,6 +20,7 @@
 	<li>
 	<img src="$SmallURL" title="$Title"/>
 		<span class="caption full-caption">
+			<a href="$Top.Link/similar/$ClassName/$ID" class="similarLink">Similar</a>
         	<h6><a href="$Link" target="_search"><% if $SearchHighlightsByField.Title %><% loop $SearchHighlightsByField.Title %>$Snippet<% end_loop %><% else %>$Title<% end_if %></a></h6>
 			<% loop $SearchHighlights %>$Snippet &hellip;<% end_loop %>
 	</span>
@@ -55,14 +56,10 @@
 	    </div>
 	</div>
 	<% end_if %>
-
-
 	</div>
 	</div>
 	</div>
-
-		<% end_if %>
-
+	<% end_if %>
 	</article>
 		$CommentsForm
 </div>
