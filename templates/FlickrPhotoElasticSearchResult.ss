@@ -12,7 +12,7 @@
 <% else %>
   $AbsoluteLink
 <% end_if %>
-- <a href="$SimilarSearchLink">Similar</a>
+- <a href="$ContainerLink/similar/$ClassName/$ID">Similar</a>
 - $TakenAt.Format(d/m/Y)
 </div>
 </div>
