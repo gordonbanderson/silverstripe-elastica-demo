@@ -43,6 +43,8 @@ FlickrPhoto:
     - FlickrSets
     - FlickrTags
     - Photographer #has_one
+  searchable_autocomplete:
+    - Title
 
 FlickrTag:
   extensions:
@@ -54,3 +56,7 @@ FlickrAuthor:
     - 'SilverStripe\Elastica\Searchable'
   searchable_fields:
     - DisplayName
+
+SiteTree:
+  - searchable_autocomplete:
+    - Title
