@@ -189,7 +189,7 @@ class FlickrPhoto extends DataObject {
 
 
 	function getCMSFields() {
-		Requirements::css( FLICKR_EDIT_TOOLS_PATH . '/css/flickredit.js' );
+		//Requirements::css( FLICKR_EDIT_TOOLS_PATH . '/css/flickredit.js' );
 
 		$flickrSetID = Controller::curr()->request->param( 'ID' );
 		$params = Controller::curr()->request->params();
@@ -202,7 +202,8 @@ class FlickrPhoto extends DataObject {
 		}
 
 
-		$fields = new FieldList();
+		//$fields = new FieldList();
+		$fields = parent::getCMSFields();
 
 		$fields->push( new TabSet( "Root", $mainTab = new Tab( "Main" ) ) );
 		$mainTab->setTitle( _t( 'SiteTree.TABMAIN', "Main" ) );
@@ -267,6 +268,56 @@ class FlickrPhoto extends DataObject {
 		$fields->addFieldToTab( "Root.Main", $gridField );
 
 		$fields->addFieldToTab("Root.Main", new CheckboxField('PromoteToHomePage', 'Promote to Home Page'));
+
+		$fields->removeByName('OriginalDescription');
+		$fields->removeByName('TakenAt');
+		$fields->removeByName('DateGranularity');
+		$fields->removeByName('FlickrLicenseID');
+		$fields->removeByName('FlickrLastUpdated');
+		$fields->removeByName('GeoIsPublic');
+		$fields->removeByName('FlickrWoeID');
+		$fields->removeByName('FlickrPlaceID');
+		$fields->removeByName('IsDirty');
+		$fields->removeByName('Accuracy');
+		$fields->removeByName('Rotation');
+		$fields->removeByName('IsPublic');
+		$fields->removeByName('Aperture');
+		$fields->removeByName('ImageUniqueID');
+		$fields->removeByName('FocalLength35mm');
+		$fields->removeByName('ISO');
+		$fields->removeByName('Media');
+		$fields->removeByName('Orientation');
+		$fields->removeByName('AspectRatio');
+		$fields->removeByName('SmallHeight');
+		$fields->removeByName('SmallWidth');
+		$fields->removeByName('MediumURL');
+		$fields->removeByName('MediumHeight');
+		$fields->removeByName('MediumWidth');
+		$fields->removeByName('MediumWidth');
+		$fields->removeByName('SquareHeight');
+		$fields->removeByName('SquareWidth');
+		$fields->removeByName('LargeURL');
+		$fields->removeByName('LargeWidth');
+		$fields->removeByName('LargeHeight');
+		$fields->removeByName('ThumbnailURL');
+		$fields->removeByName('ThumbnailWidth');
+		$fields->removeByName('ThumbnailHeight');
+		$fields->removeByName('OriginalURL');
+		$fields->removeByName('OriginalWidth');
+		$fields->removeByName('OriginalHeight');
+		$fields->removeByName('TimeShiftHours');
+		$fields->removeByName('IgnoreExif');
+		$fields->removeByName('Processed');
+		$fields->removeByName('LocalCopyOfImage');
+		$fields->removeByName('PhotographerID');
+		$fields->removeByName('PromoteToHomePage');
+		$fields->removeByName('Exifs');
+		$fields->removeByName('FlickrSets');
+		$fields->removeByName('FlickrTags');
+		$fields->removeByName('FlickrID');
+		$fields->removeByName('SquareURL');
+		$fields->removeByName('SmallURL');
+
 
 		return $fields;
 	}
