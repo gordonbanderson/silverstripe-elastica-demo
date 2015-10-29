@@ -56,7 +56,3 @@ FlickrAuthor:
     - 'SilverStripe\Elastica\Searchable'
   searchable_fields:
     - DisplayName
-
-SiteTree:
-  - searchable_autocomplete:
-    - Title
