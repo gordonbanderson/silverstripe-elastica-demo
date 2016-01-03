@@ -1,11 +1,10 @@
 <?php
-class FlickrPhotoElasticaIndexingExtension extends Extension implements ElasticaIndexingHelperInterface {
+class FlickrPhotoElasticaIndexingExtension extends IdentityElasticaIndexingHelper {
 
 	/**
 	 * Add a mapping for the location of the photograph
 	 */
-	public static function updateElasticsearchMapping(\Elastica\Type\Mapping $mapping)
-    {
+	public function updateElasticsearchMapping(\Elastica\Type\Mapping $mapping) {
     	// get the properties of the individual fields as an array
     	$properties = $mapping->getProperties();
 
@@ -67,4 +66,5 @@ class FlickrPhotoElasticaIndexingExtension extends Extension implements Elastica
 		$document->set('ShutterSpeed', $sortable);
 	    return $document;
 	}
+
 }
