@@ -4,7 +4,7 @@ class FlickrTagElasticaIndexingExtension extends Extension implements ElasticaIn
 	/**
 	 * Add a mapping for the location of the photograph
 	 */
-	public static function updateElasticsearchMapping(\Elastica\Type\Mapping $mapping)
+	public function updateElasticsearchMapping(\Elastica\Type\Mapping $mapping)
     {
     	// get the properties of the individual fields as an array
     	$properties = $mapping->getProperties();
@@ -31,5 +31,10 @@ class FlickrTagElasticaIndexingExtension extends Extension implements ElasticaIn
 	{
 		// No alterations made, so just pass through the document
 	    return $document;
+	}
+
+
+	public function updateElasticHTMLFields(array $htmlFields) {
+		return $htmlFields;
 	}
 }
